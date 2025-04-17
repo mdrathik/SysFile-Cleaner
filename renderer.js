@@ -14,6 +14,19 @@ const actualFilesCell = document.getElementById('actualFiles');
 
 let selectedDirectory = null;
 
+// Tab switching functionality
+document.querySelectorAll('.nav-menu button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons and tabs
+        document.querySelectorAll('.nav-menu button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding tab
+        button.classList.add('active');
+        document.getElementById(`${button.dataset.tab}-tab`).classList.add('active');
+    });
+});
+
 selectDirButton.addEventListener('click', async () => {
     const path = await ipcRenderer.invoke('select-directory');
     if (path) {
