@@ -90,6 +90,31 @@ cleanupButton.addEventListener('click', async () => {
                 });
                 fileListDiv.appendChild(ul);
             }
+
+            // Update the stats after cleanup
+            try {
+                const statsResult = await ipcRenderer.invoke('get-directory-stats', selectedDirectory);
+                if (statsResult.success) {
+                    let totalThumbs = 0;
+                    let totalDSStore = 0;
+                    let totalOtherFiles = 0;
+                    
+                    statsResult.stats.forEach(stat => {
+                        totalThumbs += stat.thumbsCount;
+                        totalDSStore += stat.dsStoreCount;
+                        totalOtherFiles += stat.otherFilesCount;
+                    });
+                    
+                    totalFilesCell.textContent = statsResult.totalFilesCount;
+                    thumbsFilesCell.textContent = totalThumbs;
+                    dsStoreFilesCell.textContent = totalDSStore;
+                    actualFilesCell.textContent = statsResult.totalFilesCount - totalThumbs - totalDSStore;
+                    
+                    cleanupButton.disabled = (totalThumbs === 0 && totalDSStore === 0);
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
         } else {
             resultDiv.className = 'error';
             fileListDiv.innerHTML = `Error: ${result.error}`;

@@ -3,16 +3,33 @@ const path = require('path');
 const fs = require('fs');
 const { enable } = require('@electron/remote/main');
 
+// Create logs directory if it doesn't exist
+const logsDir = path.join(app.getPath('userData'), 'logs');
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+}
+
+// Logging function
+function logActivity(message) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}\n`;
+    const logFile = path.join(logsDir, 'cleanup.log');
+    fs.appendFileSync(logFile, logMessage);
+}
+
 function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        minWidth: 600,
+        minHeight: 500,
         icon: path.join(__dirname, 'icon.png'),
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: true
-        }
+        },
+        autoHideMenuBar: true
     });
 
     enable(win.webContents);
@@ -57,17 +74,21 @@ ipcMain.handle('cleanup-thumbsdb', async (event, directoryPath) => {
             } else if (file.toLowerCase() === 'thumbs.db' || file === '.DS_Store') {
                 fs.unlinkSync(filePath);
                 deletedFiles.push(filePath);
+                logActivity(`Deleted: ${filePath}`);
             }
         }
     }
     
     try {
+        logActivity(`Starting cleanup in directory: ${directoryPath}`);
         searchAndDeleteFiles(directoryPath);
+        logActivity(`Cleanup completed. Total files deleted: ${deletedFiles.length}`);
         return {
             success: true,
             deletedFiles
         };
     } catch (error) {
+        logActivity(`Error during cleanup: ${error.message}`);
         return {
             success: false,
             error: error.message
@@ -114,13 +135,16 @@ ipcMain.handle('get-directory-stats', async (event, directoryPath) => {
     }
     
     try {
+        logActivity(`Getting stats for directory: ${directoryPath}`);
         collectStats(directoryPath);
+        logActivity(`Stats collected. Total files: ${totalFilesCount}`);
         return {
             success: true,
             stats,
             totalFilesCount
         };
     } catch (error) {
+        logActivity(`Error collecting stats: ${error.message}`);
         return {
             success: false,
             error: error.message

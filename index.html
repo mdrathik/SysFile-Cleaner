@@ -26,9 +26,13 @@
         .input-group {
             margin-bottom: 20px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
         button {
-            background-color: #3498db;
+            background-color: #92C46B;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -36,29 +40,42 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
         }
         button:hover {
-            background-color: #2980b9;
+            background-color: #7aad57;
         }
         button:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
         }
         #selectedPath {
-            margin-top: 10px;
+            margin-top: 0;
             color: #7f8c8d;
             font-style: italic;
+            font-size: 11px;
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         #result {
             margin-top: 20px;
             padding: 15px;
             border-radius: 5px;
             display: none;
+            font-size: 14px;
         }
         .success {
             background-color: #e8f5e9;
             color: #2e7d32;
             border: 1px solid #a5d6a7;
+            font-size: 13px;
         }
         .error {
             background-color: #ffebee;
@@ -165,7 +182,16 @@
         </table>
         
         <div class="input-group">
-            <button id="cleanup" disabled>Clean Up SYS Files</button>
+            <button id="cleanup" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                Clean
+            </button>
         </div>
         <div class="loading">
             <div class="spinner"></div>

@@ -1,12 +1,17 @@
 # Release Notes
 
-## Version 1.0.0
+## Version 1.1.0
 
 ### Changes
-- Simplified interface by removing the about section
+- Increased minimum window height for better content display
+- Added comprehensive logging system
+- Improved file cleanup process with automatic stats update
+- Enhanced UI with centered buttons and better spacing
+- Added trash icon to Clean button
+- Updated button color scheme
+- Simplified interface by removing about section
 - Moved credit text to bottom right corner
 - Updated company link to open in external browser
-- Improved overall user experience with cleaner interface
 
 ### Features
 - Clean and simple interface for file cleanup
@@ -14,6 +19,8 @@
 - Cross-platform support
 - Safe and secure file deletion
 - Shows total files found and cleaned
+- Automatic logging of all operations
+- Responsive window sizing
 
 ### System Requirements
 - Windows 10/11 or macOS 10.15+

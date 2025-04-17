@@ -35,7 +35,8 @@
   },
   "devDependencies": {
     "electron": "latest",
-    "electron-builder": "latest"
+    "electron-builder": "latest",
+    "electron-reloader": "^1.2.3"
   },
   "dependencies": {
     "@electron/remote": "latest"
