@@ -127,74 +127,10 @@
         .credit {
             position: fixed;
             bottom: 10px;
-            right: 10px;
+            left: 10px;
             font-size: 12px;
             color: #7f8c8d;
             font-style: italic;
-        }
-        
-        .nav-menu {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 10px;
-        }
-        
-        .nav-menu button {
-            background: none;
-            border: none;
-            padding: 8px 16px;
-            margin: 0 5px;
-            color: #7f8c8d;
-            cursor: pointer;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-        
-        .nav-menu button:hover {
-            color: #3498db;
-        }
-        
-        .nav-menu button.active {
-            color: #3498db;
-            border-bottom: 2px solid #3498db;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .about-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .about-section h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .about-section p {
-            margin: 8px 0;
-            color: #495057;
-            line-height: 1.5;
-        }
-        
-        .license-text {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e9ecef;
         }
     </style>
 </head>
@@ -202,70 +138,46 @@
     <div class="container">
         <h1>Thumbs.db Cleanup Utility</h1>
         
-        <div class="nav-menu">
-            <button class="active" data-tab="main">Main</button>
-            <button data-tab="about">About</button>
+        <div class="input-group">
+            <button id="selectDir">Select Directory</button>
+            <div id="selectedPath"></div>
         </div>
         
-        <div id="main-tab" class="tab-content active">
-            <div class="input-group">
-                <button id="selectDir">Select Directory</button>
-                <div id="selectedPath"></div>
-            </div>
-            
-            <table class="stats-table" id="statsTable">
-                <tbody id="statsBody">
-                    <tr>
-                        <th>Total Files</th>
-                        <td class="count-cell" id="totalFiles">0</td>
-                    </tr>
-                    <tr>
-                        <th>Thumbs.db Files</th>
-                        <td class="count-cell" id="thumbsFiles">0</td>
-                    </tr>
-                    <tr>
-                        <th>.DS_Store Files</th>
-                        <td class="count-cell" id="dsStoreFiles">0</td>
-                    </tr>
-                    <tr>
-                        <th>Actual Files</th>
-                        <td class="count-cell" id="actualFiles">0</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="input-group">
-                <button id="cleanup" disabled>Clean Up SYS Files</button>
-            </div>
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Cleaning up files...</p>
-            </div>
-            <div id="result">
-                <h3>Results:</h3>
-                <div id="fileList"></div>
-            </div>
-        </div>
+        <table class="stats-table" id="statsTable">
+            <tbody id="statsBody">
+                <tr>
+                    <th>Total Files</th>
+                    <td class="count-cell" id="totalFiles">0</td>
+                </tr>
+                <tr>
+                    <th>Thumbs.db Files</th>
+                    <td class="count-cell" id="thumbsFiles">0</td>
+                </tr>
+                <tr>
+                    <th>.DS_Store Files</th>
+                    <td class="count-cell" id="dsStoreFiles">0</td>
+                </tr>
+                <tr>
+                    <th>Actual Files</th>
+                    <td class="count-cell" id="actualFiles">0</td>
+                </tr>
+            </tbody>
+        </table>
         
-        <div id="about-tab" class="tab-content">
-            <div class="about-section">
-                <h2>About</h2>
-                <p><strong>Version:</strong> 1.0.0</p>
-                <p><strong>Author:</strong> Md. Solaiman Hossain</p>
-                <p><strong>Company:</strong> <a href="https://www.bzmgraphics.com/" style="color: #3498db; text-decoration: none;">bZm Graphics Ltd.</a></p>
-                <div class="license-text">
-                    <p>This software is free for all users. You are free to:</p>
-                    <ul>
-                        <li>Use the software for any purpose</li>
-                        <li>Share the software with others</li>
-                    </ul>
-                    <p>No attribution or payment is required.</p>
-                </div>
-            </div>
+        <div class="input-group">
+            <button id="cleanup" disabled>Clean Up SYS Files</button>
+        </div>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Cleaning up files...</p>
+        </div>
+        <div id="result">
+            <h3>Results:</h3>
+            <div id="fileList"></div>
         </div>
     </div>
     <div class="credit">
-        Powered by <a href="#" style="color: #7f8c8d; text-decoration: none;">bZm Graphics Ltd.</a>
+        <i>Powered by <a href="#" style="color: #7f8c8d; text-decoration: none;">bZm Graphics Ltd.</a></i>
     </div>
     <script src="renderer.js"></script>
 </body>
