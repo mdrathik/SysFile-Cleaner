@@ -19,10 +19,12 @@ function logActivity(message) {
 
 function createWindow() {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        minWidth: 600,
+        width: 500,
+        height: 500,
+        minWidth: 500,
         minHeight: 500,
+        maxWidth: 500,
+        maxHeight: 500,
         icon: path.join(__dirname, 'icon.png'),
         webPreferences: {
             nodeIntegration: true,
