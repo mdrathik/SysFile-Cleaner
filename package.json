@@ -1,0 +1,43 @@
+{
+  "name": "thumbsdb-cleanup",
+  "version": "1.0.0",
+  "description": "A utility to clean up thumbs.db files recursively",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64"
+  },
+  "keywords": [
+    "electron",
+    "cleanup",
+    "thumbs.db"
+  ],
+  "author": "Md. Solaiman Hossain",
+  "license": "ISC",
+  "build": {
+    "appId": "com.thumbsdb.cleanup",
+    "productName": "Thumbs.db Cleanup",
+    "icon": "icon.png",
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Thumbs.db Cleanup"
+    }
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  },
+  "dependencies": {
+    "@electron/remote": "latest"
+  }
+}
