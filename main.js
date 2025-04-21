@@ -3,6 +3,14 @@ const path = require('path');
 const fs = require('fs');
 const { enable } = require('@electron/remote/main');
 
+// Add hot reload
+try {
+    require('electron-reloader')(module, {
+        debug: true,
+        watchRenderer: true
+    });
+} catch (_) { console.log('Error'); }
+
 // Create logs directory if it doesn't exist
 const logsDir = path.join(app.getPath('userData'), 'logs');
 if (!fs.existsSync(logsDir)) {
@@ -65,26 +73,50 @@ ipcMain.handle('cleanup-thumbsdb', async (event, directoryPath) => {
     const deletedFiles = [];
     
     function searchAndDeleteFiles(dir) {
-        const files = fs.readdirSync(dir);
-        
-        for (const file of files) {
-            const filePath = path.join(dir, file);
-            const stat = fs.statSync(filePath);
+        try {
+            const files = fs.readdirSync(dir);
             
-            if (stat.isDirectory()) {
-                searchAndDeleteFiles(filePath);
-            } else if (file.toLowerCase() === 'thumbs.db' || file === '.DS_Store') {
-                fs.unlinkSync(filePath);
-                deletedFiles.push(filePath);
-                logActivity(`Deleted: ${filePath}`);
+            for (const file of files) {
+                try {
+                    const filePath = path.join(dir, file);
+                    const stat = fs.statSync(filePath);
+                    
+                    if (stat.isDirectory()) {
+                        searchAndDeleteFiles(filePath);
+                    } else if (
+                        file.toLowerCase() === 'thumbs.db' || 
+                        file === '.DS_Store' ||
+                        file.toLowerCase() === 'desktop.ini' ||
+                        file === '.BridgeSort'
+                    ) {
+                        try {
+                            fs.unlinkSync(filePath);
+                            deletedFiles.push(filePath);
+                            logActivity(`Deleted: ${filePath}`);
+                        } catch (deleteError) {
+                            console.error(`Error deleting file ${filePath}:`, deleteError);
+                            logActivity(`Error deleting file ${filePath}: ${deleteError.message}`);
+                        }
+                    }
+                } catch (fileError) {
+                    console.error(`Error processing file ${file}:`, fileError);
+                    continue;
+                }
             }
+        } catch (dirError) {
+            console.error(`Error reading directory ${dir}:`, dirError);
         }
     }
     
     try {
+        if (!directoryPath) {
+            throw new Error('No directory path provided');
+        }
+        
         logActivity(`Starting cleanup in directory: ${directoryPath}`);
         searchAndDeleteFiles(directoryPath);
         logActivity(`Cleanup completed. Total files deleted: ${deletedFiles.length}`);
+        
         return {
             success: true,
             deletedFiles
@@ -99,54 +131,88 @@ ipcMain.handle('cleanup-thumbsdb', async (event, directoryPath) => {
 });
 
 ipcMain.handle('get-directory-stats', async (event, directoryPath) => {
+    console.log('Starting get-directory-stats for:', directoryPath);
+    
     const stats = [];
     let totalFilesCount = 0;
+    let totalThumbsCount = 0;
+    let totalDSStoreCount = 0;
+    let totalDesktopIniCount = 0;
+    let totalBridgeSortCount = 0;
+    let totalOtherFilesCount = 0;
     
     function collectStats(dir) {
-        const files = fs.readdirSync(dir);
-        let thumbsCount = 0;
-        let dsStoreCount = 0;
-        let otherFilesCount = 0;
-        
-        for (const file of files) {
-            const filePath = path.join(dir, file);
-            const stat = fs.statSync(filePath);
+        try {
+            // Normalize the path for macOS
+            const normalizedDir = path.normalize(dir);
+            console.log('Scanning directory:', normalizedDir);
             
-            if (stat.isDirectory()) {
-                collectStats(filePath);
-            } else {
-                totalFilesCount++;
-                if (file.toLowerCase() === 'thumbs.db') {
-                    thumbsCount++;
-                } else if (file === '.DS_Store') {
-                    dsStoreCount++;
-                } else {
-                    otherFilesCount++;
+            if (!fs.existsSync(normalizedDir)) {
+                console.error('Directory does not exist:', normalizedDir);
+                return;
+            }
+            
+            const files = fs.readdirSync(normalizedDir);
+            console.log(`Found ${files.length} items in directory`);
+            
+            for (const file of files) {
+                try {
+                    const filePath = path.join(normalizedDir, file);
+                    const stat = fs.statSync(filePath);
+                    
+                    if (stat.isDirectory()) {
+                        collectStats(filePath);
+                    } else {
+                        totalFilesCount++;
+                        const fileName = file.toLowerCase();
+                        
+                        if (fileName === 'thumbs.db') {
+                            totalThumbsCount++;
+                            console.log('Found thumbs.db:', filePath);
+                        } else if (file === '.DS_Store') {
+                            totalDSStoreCount++;
+                            console.log('Found .DS_Store:', filePath);
+                        } else if (fileName === 'desktop.ini') {
+                            totalDesktopIniCount++;
+                            console.log('Found desktop.ini:', filePath);
+                        } else if (file === '.BridgeSort') {
+                            totalBridgeSortCount++;
+                            console.log('Found .BridgeSort:', filePath);
+                        } else {
+                            totalOtherFilesCount++;
+                        }
+                    }
+                } catch (fileError) {
+                    console.error(`Error processing file ${file}:`, fileError);
+                    continue;
                 }
             }
-        }
-        
-        if (thumbsCount > 0 || dsStoreCount > 0) {
-            stats.push({
-                directory: dir,
-                thumbsCount,
-                dsStoreCount,
-                otherFilesCount
-            });
+        } catch (dirError) {
+            console.error(`Error reading directory ${dir}:`, dirError);
         }
     }
     
     try {
-        logActivity(`Getting stats for directory: ${directoryPath}`);
+        if (!directoryPath) {
+            throw new Error('No directory path provided');
+        }
+        
         collectStats(directoryPath);
-        logActivity(`Stats collected. Total files: ${totalFilesCount}`);
-        return {
+        
+        const result = {
             success: true,
-            stats,
-            totalFilesCount
+            totalFilesCount,
+            totalThumbsCount,
+            totalDSStoreCount,
+            totalDesktopIniCount,
+            totalBridgeSortCount,
+            totalOtherFilesCount
         };
+        
+        console.log('Stats collection completed:', JSON.stringify(result, null, 2));
+        return result;
     } catch (error) {
-        logActivity(`Error collecting stats: ${error.message}`);
+        console.error('Error in get-directory-stats:', error);
         return {
             success: false,
             error: error.message
